@@ -4,9 +4,11 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import appReducer from "./reducers/app.reducer";
 
 
-const appStore = createStore(
-  appReducer,
-  composeWithDevTools(applyMiddleware(ReduxThunk))
-);
+const appStore = (history) => {
+  return createStore(
+    appReducer,
+    composeWithDevTools(applyMiddleware(ReduxThunk.withExtraArgument({ history })))
+  )
+}
 
 export { appStore };

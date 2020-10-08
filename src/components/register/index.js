@@ -5,13 +5,12 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
-
-
+import { registerUser } from "../../redux/actions/user.action";
 function equalTo(ref, msg) {
   return this.test({
     name: "equalTo",
     exclusive: false,
-    message: msg || "${path} must be the same as ${reference}",
+    message: msg,
     params: {
       reference: ref.path,
     },
@@ -24,22 +23,21 @@ function equalTo(ref, msg) {
 yup.addMethod(yup.string, "equalTo", equalTo);
 
 const schema = yup.object().shape({
-  username: yup.string().required("Username bat buoc"),
-  phone: yup.number(),
-  date: yup.date(),
-  mail: yup.string(),
+  username: yup.string().required(),
+  email: yup.string().required(),
   password: yup.string().required(),
   passwordConfirm: yup.string().equalTo(yup.ref("password")),
 });
 
-function Register({ onCloseModel }) {
+function Register() {
   const dispatch = useDispatch();
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
 
   const handleRegister = (data) => {
-    
+    const { username, email, password } = data;
+    dispatch(registerUser({ username, email, password }));
   };
 
   return (
@@ -57,25 +55,17 @@ function Register({ onCloseModel }) {
             name="username"
             placeholder="Nhập tên cá nhân"
           />
-          {errors.username ? <div>{errors.username.message}</div> : null}
+          {errors.username ? <div className={styles.err} >Chưa nhập tên</div> : null}
         </div>
-        {/* <div className={styles.group}>
-          <span>Số điện thoại </span>
-          <input
-            ref={register}
-            type="text"
-            name="phone"
-            placeholder="Nhập số điện thoại"
-          />
-        </div> */}
         <div className={styles.group}>
           <span>Email</span>
           <input
             ref={register}
-            type="mail"
-            name="mail"
+            type="email"
+            name="email"
             placeholder="Nhập email"
           />
+          {errors.email ? <div className={styles.err}>Chưa nhập email</div> : null}
         </div>
         <div className={styles.group}>
           <span>Mật khẩu</span>
@@ -85,6 +75,7 @@ function Register({ onCloseModel }) {
             name="password"
             placeholder="Nhập mật khẩu"
           />
+          {errors.password ? <div className={styles.err}>Chưa nhập mật khẩu</div> : null}
         </div>
         <div className={styles.group}>
           <span>Xác nhận mật khẩu</span>
@@ -94,22 +85,8 @@ function Register({ onCloseModel }) {
             type="password"
             placeholder="Nhập mật khẩu xác nhận"
           />
+          {errors.passwordConfirm ? <div className={styles.err}>Xác nhận mật khẩu không đúng</div> : null}
         </div>
-        {/* <div className={styles.sexGroup}>
-          <div className={styles.sex}>Giới tính</div>
-          <div className={styles.radioGroup}>
-            <input type="radio" name="sex" />
-            <label>Nam</label>
-          </div>
-          <div className={styles.radioGroup}>
-            <input type="radio" name="sex" />
-            <label>Nữ</label>
-          </div>
-        </div> */}
-        {/* <div className={styles.group}>
-          <span>Ngày sinh</span>
-          <input ref={register} type="date" name="date" />
-        </div> */}
         <button type="submit">Đăng ký</button>
       </form>
       <div className={styles.policy}>

@@ -4,7 +4,7 @@ const token = window.localStorage.getItem("token");
 const instance = axios.create({
   baseURL: api,
   headers: {
-    "Authorization": token? `mickey ${token}`: "",
+    "Authorization": token? `Bearer ${token}`: "",
   }
 })
 export default instance;

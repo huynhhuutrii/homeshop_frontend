@@ -4,14 +4,15 @@ import ProductDetailPage from "./pages/product-detail-page";
 import LoginPage from "./pages/loginpage";
 import RegisterPage from "./pages/registerpage";
 import AdminPage from "./pages/adminpage";
-import ProductsPage from "./pages/productspage";
+import ProductPage from "./pages/productpage";
 import CategoryPage from "./pages/categorypage";
 import OrderPage from "./pages/orderpage";
 import { Switch, Route } from "react-router-dom";
 import PrivateRoute from "./components/HOC/PrivateRoute";
 import { useDispatch, useSelector } from "react-redux";
 import { userLoggedIn } from "./redux/actions/user.action";
-
+import { getCategory } from "./redux/actions/category.action";
+import { getInitialData } from "./redux/actions/initialData.action";
 function App() {
   const dispatch = useDispatch();
   const auth = useSelector(state => state.authReducer);
@@ -19,6 +20,7 @@ function App() {
     if (!auth.authenticate) {
       dispatch(userLoggedIn())
     }
+    dispatch(getInitialData())
   },[])
 
 
@@ -30,7 +32,7 @@ function App() {
     />
     <PrivateRoute
       path="/products"
-      component={ProductsPage}
+      component={ProductPage}
     />
 
     <PrivateRoute
@@ -56,7 +58,5 @@ function App() {
       render={(routeProps) => <LoginPage {...routeProps} />}
     />
   </Switch>
-
-
 }
 export default App;

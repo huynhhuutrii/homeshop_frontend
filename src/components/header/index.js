@@ -14,9 +14,10 @@ import { logout } from "../../redux/actions/user.action";
 function Header() {
   const dispatch = useDispatch();
   const auth = useSelector(state => state.authReducer);
-  const logoutUser = () =>{
-      dispatch(logout());
+  const logoutUser = () => {
+    dispatch(logout());
   }
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>

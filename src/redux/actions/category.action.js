@@ -8,9 +8,8 @@ export const getCategory = () => {
       const { listCategory } = res.data;
       dispatch({
         type: actionTypes.GET_ALL_CATEGORY_SUCCESS,
-        payloads:
-          listCategory
-      })
+        payloads: listCategory
+      }) 
     } catch (err) {
       dispatch({
         type: actionTypes.GET_ALL_CATEGORY_FAILURE,
@@ -26,7 +25,7 @@ export const addCategory = (form) =>{
     if(res.status === 201){
       dispatch({
         type: actionTypes.ADD_CATEGORY_SUCCESS,
-        payloads: res.data.category
+        payloads: { category: res.data.category}
       })
     }else{
       dispatch({ 

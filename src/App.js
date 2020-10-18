@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-import HomePage from "./pages/homepage";
-import ProductDetailPage from "./pages/product-detail-page";
 import LoginPage from "./pages/loginpage";
 import RegisterPage from "./pages/registerpage";
 import AdminPage from "./pages/adminpage";
@@ -21,7 +19,7 @@ function App() {
       dispatch(userLoggedIn())
     }
     dispatch(getInitialData())
-  },[])
+  }, [])
 
 
   return <Switch>
@@ -42,11 +40,6 @@ function App() {
     <PrivateRoute
       path="/category"
       component={CategoryPage}
-    />
-
-    <Route
-      path="/product-detail"
-      render={(routeProps) => <ProductDetailPage {...routeProps} />}
     />
     <Route
       path="/register"

@@ -19,20 +19,16 @@ const newCategory = (parentID, categories, category) => {
   }
   for (let cat of categories) {
     if (cat._id === parentID) {
+      const newCategory = {
+        _id: category._id,
+        name: category.name,
+        slug: category.slug,
+        parentID: category.parentID,
+        children: []
+      }
       currentCategory.push({
         ...cat,
-        children: cat.children.length > 0 ?
-          newCategory(parentID,
-            [...cat.children,
-            {
-              _id: category._id,
-              name: category.name,
-              slug: category.slug,
-              parentID: category.parentID,
-              children: category.children
-            }],
-            category)
-          : []
+        children: cat.children.length > 0 ? [...cat.children, newCategory] : [newCategory]
       })
     } else {
       currentCategory.push({
@@ -49,6 +45,7 @@ export default (state = initialState, action) => {
     case actionTypes.GET_ALL_CATEGORY_RQ:
       return { ...state, loading: true }
     case actionTypes.GET_ALL_CATEGORY_SUCCESS:
+
       return {
         ...state,
         categories: action.payloads.categories,
@@ -60,7 +57,6 @@ export default (state = initialState, action) => {
       return { ...state, loading: true }
     case actionTypes.ADD_CATEGORY_SUCCESS:
       const { category } = action.payloads;
-      console.log(category)
       return {
         ...state,
         loading: false,

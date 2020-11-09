@@ -3,17 +3,21 @@ import styles from "./styles.module.scss";
 import logoLogin from "../../assets/img/logosigin.png";
 import { ReactComponent as FaIcon } from "../../assets/img/facebook.svg";
 import { login } from "../../redux/actions/user.action";
-import { useDispatch } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import { Redirect } from "react-router-dom";
 export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
+  const auth = useSelector(state => state.authReducer)
   const userLogin = (e) => {
     e.preventDefault();
     const user = { email, password };
     dispatch(login(user));
+  }
+  if (auth.authenticate === true) {
+    return <Redirect to="/" />
   }
 
   return (

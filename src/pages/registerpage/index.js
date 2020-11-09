@@ -1,10 +1,10 @@
-import React from 'react'
-import Layout from "../../layout";
-import Register from "../../components/register";
-export default function RegisterPage() {
+import React from 'react';
+import Layout from '../../layout';
+import Register from '../../components/register';
+export default function RegisterPage(props) {
   return (
-   <Layout>
-     <Register/>
-   </Layout>
-  )
+    <Layout>
+      <Register {...props} />
+    </Layout>
+  );
 }

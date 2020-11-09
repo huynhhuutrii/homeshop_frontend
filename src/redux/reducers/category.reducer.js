@@ -53,6 +53,35 @@ export default (state = initialState, action) => {
       }
     case actionTypes.GET_ALL_CATEGORY_FAILURE:
       return { ...state, error: action.payloads.error }
+    case actionTypes.UPDATE_CATEGORY_REQUEST:
+      return { ...state, loading: true }
+    case actionTypes.UPDATE_CATEGORY_SUCCESS:
+      return {
+        ...state,
+        loading: false
+      }
+    case actionTypes.UPDATE_CATEGORY_FAILURE:
+      return {
+        ...state,
+        error: action.payloads.error,
+        loading: false
+      }
+    case actionTypes.DELETE_CATEGORY_REQUEST:
+      return {
+        ...state,
+        loading: true
+      }
+    case actionTypes.DELETE_CATEGORY_SUCCESS:
+      return {
+        ...state,
+        loading: false
+      }
+    case actionTypes.DELETE_CATEGORY_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payloads.error
+      }
     case actionTypes.ADD_CATEGORY_REQUEST:
       return { ...state, loading: true }
     case actionTypes.ADD_CATEGORY_SUCCESS:

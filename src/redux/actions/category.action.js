@@ -23,37 +23,59 @@ export const getCategory = () => {
 }
 export const updateCategories = (form) => {
   return async dispatch => {
+    dispatch({ type: actionTypes.UPDATE_CATEGORY_REQUEST })
     const res = await axios.post("/category/update", form);
     if (res.status === 201) {
+      dispatch({ type: actionTypes.UPDATE_CATEGORY_SUCCESS })
       dispatch(getCategory())
       return true;
+    } else {
+      dispatch({
+        type: actionTypes.UPDATE_CATEGORY_FAILURE,
+        payloads: { error: res.data.error }
+      })
     }
   }
 }
-export const deleteCategories = (Ids) => {
+export const deleteCategories = (ids) => {
   return async dispatch => {
-    const res = await axios.post("/category/delete", Ids);
-    console.log(res)
+    dispatch({ type: actionTypes.DELETE_CATEGORY_REQUEST });
+    const res = await axios.post("/category/delete", { payload: { ids } });
+    if (res.status === 201) {
+      dispatch({ type: actionTypes.DELETE_CATEGORY_SUCCESS });
+      dispatch(getCategory())
+    } else {
+      dispatch({
+        type: actionTypes.DELETE_CATEGORY_FAILURE,
+        payloads: {
+          error: res.data.error
+        }
+      })
+    }
   }
 }
 export const addCategory = (form) => {
   return async dispatch => {
+    dispatch({ type: actionTypes.ADD_CATEGORY_REQUEST })
+    try {
+      const res = await axios.post("/category/create", form);
+      if (res.status === 201) {
 
-    const res = await axios.post("/category/create", form);
-    if (res.status === 201) {
+        dispatch({
+          type: actionTypes.ADD_CATEGORY_SUCCESS,
+          payloads: { category: res.data.category }
+        })
+      } else {
+        dispatch({
+          type: actionTypes.ADD_CATEGORY_FAILURE,
+          payloads: {
+            error: res.data.error
+          }
 
-      dispatch({
-        type: actionTypes.ADD_CATEGORY_SUCCESS,
-        payloads: { category: res.data.category }
-      })
-    } else {
-      dispatch({
-        type: actionTypes.ADD_CATEGORY_FAILURE,
-        payloads: {
-          error: res.data.error
-        }
-
-      })
+        })
+      }
+    } catch (err) {
+      console.log(err)
     }
   }
 }

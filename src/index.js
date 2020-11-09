@@ -3,20 +3,15 @@ import ReactDOM from "react-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { BrowserRouter, useHistory, } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { appStore } from "./redux/store";
 
-const RealApp = () => {
-  const history = useHistory()
-  return <Provider store={appStore(history)}>
-    <App />
-  </Provider>
-}
-
 ReactDOM.render(
   <BrowserRouter>
-    <RealApp />
+    <Provider store={appStore}>
+      <App />
+    </Provider>
   </BrowserRouter>,
   document.getElementById("root")
 );

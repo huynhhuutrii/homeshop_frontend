@@ -9,7 +9,6 @@ import { Switch, Route } from "react-router-dom";
 import PrivateRoute from "./components/HOC/PrivateRoute";
 import { useDispatch, useSelector } from "react-redux";
 import { userLoggedIn } from "./redux/actions/user.action";
-import { getCategory } from "./redux/actions/category.action";
 import { getInitialData } from "./redux/actions/initialData.action";
 function App() {
   const dispatch = useDispatch();

@@ -1,14 +1,14 @@
-import React from "react";
-import styles from "./styles.module.scss";
-import logo from "../../assets/img/logo.jpg";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers";
-import * as yup from "yup";
-import { useDispatch } from "react-redux";
-import { registerUser } from "../../redux/actions/user.action";
+import React from 'react';
+import styles from './styles.module.scss';
+import logo from '../../assets/img/logo.jpg';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers';
+import * as yup from 'yup';
+import { useDispatch } from 'react-redux';
+import { registerUser } from '../../redux/actions/user.action';
 function equalTo(ref, msg) {
   return this.test({
-    name: "equalTo",
+    name: 'equalTo',
     exclusive: false,
     message: msg,
     params: {
@@ -20,24 +20,26 @@ function equalTo(ref, msg) {
   });
 }
 
-yup.addMethod(yup.string, "equalTo", equalTo);
+yup.addMethod(yup.string, 'equalTo', equalTo);
 
 const schema = yup.object().shape({
+  name: yup.string().required(),
   username: yup.string().required(),
   email: yup.string().required(),
   password: yup.string().required(),
-  passwordConfirm: yup.string().equalTo(yup.ref("password")),
+  passwordConfirm: yup.string().equalTo(yup.ref('password')),
 });
 
-function Register() {
+function Register(props) {
   const dispatch = useDispatch();
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
 
   const handleRegister = (data) => {
-    const { username, email, password } = data;
-    dispatch(registerUser({ username, email, password }));
+    const { name, username, email, password } = data;
+    dispatch(registerUser({ name, username, email, password }));
+    props.history.push('/');
   };
 
   return (
@@ -52,10 +54,22 @@ function Register() {
           <input
             ref={register}
             type="text"
-            name="username"
-            placeholder="Nhập tên cá nhân"
+            name="name"
+            placeholder="Nhập đăng nhập"
           />
-          {errors.username ? <div className={styles.err} >Chưa nhập tên</div> : null}
+          {errors.name ? <div className={styles.err}>Chưa nhập tên</div> : null}
+        </div>
+        <div className={styles.group}>
+          <span>Tên đăng nhập</span>
+          <input
+            ref={register}
+            type="text"
+            name="username"
+            placeholder="Nhập đăng nhập"
+          />
+          {errors.username ? (
+            <div className={styles.err}>Chưa nhập tên đăng nhập</div>
+          ) : null}
         </div>
         <div className={styles.group}>
           <span>Email</span>
@@ -65,7 +79,9 @@ function Register() {
             name="email"
             placeholder="Nhập email"
           />
-          {errors.email ? <div className={styles.err}>Chưa nhập email</div> : null}
+          {errors.email ? (
+            <div className={styles.err}>Chưa nhập email</div>
+          ) : null}
         </div>
         <div className={styles.group}>
           <span>Mật khẩu</span>
@@ -75,7 +91,9 @@ function Register() {
             name="password"
             placeholder="Nhập mật khẩu"
           />
-          {errors.password ? <div className={styles.err}>Chưa nhập mật khẩu</div> : null}
+          {errors.password ? (
+            <div className={styles.err}>Chưa nhập mật khẩu</div>
+          ) : null}
         </div>
         <div className={styles.group}>
           <span>Xác nhận mật khẩu</span>
@@ -85,12 +103,14 @@ function Register() {
             type="password"
             placeholder="Nhập mật khẩu xác nhận"
           />
-          {errors.passwordConfirm ? <div className={styles.err}>Xác nhận mật khẩu không đúng</div> : null}
+          {errors.passwordConfirm ? (
+            <div className={styles.err}>Xác nhận mật khẩu không đúng</div>
+          ) : null}
         </div>
         <button type="submit">Đăng ký</button>
       </form>
       <div className={styles.policy}>
-        Khi bạn nhấn Đăng ký, bạn đã đồng ý thực hiện mọi giao dịch mua bán theo{" "}
+        Khi bạn nhấn Đăng ký, bạn đã đồng ý thực hiện mọi giao dịch mua bán theo{' '}
         <span>điều kiện sử dụng và chính sách của HTSHOP.vn</span>
       </div>
     </div>

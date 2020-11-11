@@ -16,6 +16,7 @@ import {
   IoIosArrowDown,
   IoIosArrowForward,
 } from 'react-icons/io';
+import Tree from '../tree';
 export default function Category() {
   const dispatch = useDispatch();
   const category = useSelector((state) => state.categoryReducer);
@@ -29,8 +30,6 @@ export default function Category() {
   const [expandedArray, setExpandedArray] = useState([]);
   const [updateCategoryModal, setUpdateCategoryModal] = useState(false);
   const [deleteCategoryModal, setDeleteCategoryModal] = useState(false);
-  console.log('check', checkedArray);
-  console.log('expanded', expandedArray);
   const handleClose = () => {
     const form = new FormData();
     form.append('name', categoryName);
@@ -58,17 +57,17 @@ export default function Category() {
   };
 
   const createCategoryList = (categories, options = []) => {
-    // for (let category of categories) {
-    //   options.push({
-    //     value: category._id,
-    //     name: category.name,
-    //     parentID: category.parentID,
-    //     type: category.type,
-    //   });
-    //   if (category.children.length > 0) {
-    //     createCategoryList(category.children, options);
-    //   }
-    // }
+    for (let category of categories) {
+      options.push({
+        value: category._id,
+        name: category.name,
+        parentID: category.parentID,
+        type: category.type,
+      });
+      if (category.children.length > 0) {
+        createCategoryList(category.children, options);
+      }
+    }
     return options;
   };
   const handelCategoryImage = (e) => {
@@ -349,6 +348,7 @@ export default function Category() {
       </Modal>
     );
   };
+
   const renderAddCategoryModel = () => {
     return (
       <Modal show={show} onHide={handleClose}>
@@ -392,6 +392,7 @@ export default function Category() {
       </Modal>
     );
   };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -399,10 +400,12 @@ export default function Category() {
         <Button onClick={handleShow}>Thêm</Button>
       </div>
       <div className={styles.body}>
+        <Tree cats={category?.categories || []} />
+
         {/* <ul>
           {showCategory(category.categories)}
         </ul> */}
-        <CheckboxTree
+        {/* <CheckboxTree
           nodes={showCategory(category.categories)}
           checked={checked}
           expanded={expanded}
@@ -415,7 +418,7 @@ export default function Category() {
             expandClose: <IoIosArrowForward />,
             expandOpen: <IoIosArrowDown />,
           }}
-        />
+        /> */}
       </div>
       <Row>
         <Col>

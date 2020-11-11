@@ -1,9 +1,9 @@
-import * as actionTypes from "../constants";
+import * as actionTypes from '../constants';
 const initialState = {
   categories: [],
   loading: false,
-  error: null
-}
+  error: null,
+};
 const newCategory = (parentID, categories, category) => {
   let currentCategory = [];
   if (parentID === undefined) {
@@ -13,9 +13,9 @@ const newCategory = (parentID, categories, category) => {
         _id: category.id,
         name: category.name,
         slug: category.slug,
-        children: []
-      }
-    ]
+        children: [],
+      },
+    ];
   }
   for (let cat of categories) {
     if (cat._id === parentID) {
@@ -24,76 +24,83 @@ const newCategory = (parentID, categories, category) => {
         name: category.name,
         slug: category.slug,
         parentID: category.parentID,
-        children: []
-      }
+        children: [],
+      };
       currentCategory.push({
         ...cat,
-        children: cat.children.length > 0 ? [...cat.children, newCategory] : [newCategory]
-      })
+        children:
+          cat.children.length > 0
+            ? [...cat.children, newCategory]
+            : [newCategory],
+      });
     } else {
       currentCategory.push({
         ...cat,
-        children: cat.children && cat.children.length > 0 ? newCategory(parentID, cat.children, category) : []
-      })
+        children:
+          cat.children && cat.children.length > 0
+            ? newCategory(parentID, cat.children, category)
+            : [],
+      });
     }
-
   }
   return currentCategory;
-}
+};
 export default (state = initialState, action) => {
   switch (action.type) {
+    case actionTypes.SET_CATEGORIES:
+      return { ...state, categories: action.payload };
     case actionTypes.GET_ALL_CATEGORY_RQ:
-      return { ...state, loading: true }
+      return { ...state, loading: true };
     case actionTypes.GET_ALL_CATEGORY_SUCCESS:
-
       return {
         ...state,
         categories: action.payloads.categories,
         loading: false,
-      }
+      };
     case actionTypes.GET_ALL_CATEGORY_FAILURE:
-      return { ...state, error: action.payloads.error }
+      return { ...state, error: action.payloads.error };
     case actionTypes.UPDATE_CATEGORY_REQUEST:
-      return { ...state, loading: true }
+      return { ...state, loading: true };
     case actionTypes.UPDATE_CATEGORY_SUCCESS:
       return {
         ...state,
-        loading: false
-      }
+        loading: false,
+      };
     case actionTypes.UPDATE_CATEGORY_FAILURE:
       return {
         ...state,
         error: action.payloads.error,
-        loading: false
-      }
+        loading: false,
+      };
     case actionTypes.DELETE_CATEGORY_REQUEST:
       return {
         ...state,
-        loading: true
-      }
+        loading: true,
+      };
     case actionTypes.DELETE_CATEGORY_SUCCESS:
       return {
         ...state,
-        loading: false
-      }
+        loading: false,
+      };
     case actionTypes.DELETE_CATEGORY_FAILURE:
       return {
         ...state,
         loading: false,
-        error: action.payloads.error
-      }
+        error: action.payloads.error,
+      };
     case actionTypes.ADD_CATEGORY_REQUEST:
-      return { ...state, loading: true }
+      return { ...state, loading: true };
     case actionTypes.ADD_CATEGORY_SUCCESS:
       const { category } = action.payloads;
       return {
         ...state,
         loading: false,
-        categories: newCategory(category.parentID, state.categories, category)
-      }
+        categories: newCategory(category.parentID, state.categories, category),
+      };
 
     case actionTypes.ADD_CATEGORY_FAILURE:
-      return { ...state, loading: false, error: action.payloads.error }
-    default: return state
+      return { ...state, loading: false, error: action.payloads.error };
+    default:
+      return state;
   }
-}
+};

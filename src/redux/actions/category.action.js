@@ -29,13 +29,12 @@ export const getCategory = () => {
     }
   };
 };
-export const updateCategories = (form) => {
+export const updateCategories = (cat) => {
   return async (dispatch) => {
     dispatch({ type: actionTypes.UPDATE_CATEGORY_REQUEST });
-    const res = await axios.post('/category/update', form);
+    const res = await axios.post('/category/update', cat);
     if (res.status === 201) {
       dispatch({ type: actionTypes.UPDATE_CATEGORY_SUCCESS });
-      dispatch(getCategory());
       return true;
     } else {
       dispatch({
@@ -45,13 +44,14 @@ export const updateCategories = (form) => {
     }
   };
 };
-export const deleteCategories = (ids) => {
+export const deleteCategory = (id) => {
   return async (dispatch) => {
     dispatch({ type: actionTypes.DELETE_CATEGORY_REQUEST });
-    const res = await axios.post('/category/delete', { payload: { ids } });
-    if (res.status === 201) {
+    const res = await axios.post('/category/delete', { id });
+
+    if (res.status === 200) {
       dispatch({ type: actionTypes.DELETE_CATEGORY_SUCCESS });
-      dispatch(getCategory());
+      return true;
     } else {
       dispatch({
         type: actionTypes.DELETE_CATEGORY_FAILURE,
@@ -72,6 +72,7 @@ export const addCategory = (form) => {
           type: actionTypes.ADD_CATEGORY_SUCCESS,
           payloads: { category: res.data.category },
         });
+        dispatch(getCategory());
       } else {
         dispatch({
           type: actionTypes.ADD_CATEGORY_FAILURE,

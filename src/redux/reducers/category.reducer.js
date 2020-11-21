@@ -4,7 +4,7 @@ const initialState = {
   loading: false,
   error: null,
 };
-const newCategory = (parentID, categories, category) => {
+const addNewCategory = (parentID, categories, category) => {
   let currentCategory = [];
   if (parentID === undefined) {
     return [
@@ -23,7 +23,7 @@ const newCategory = (parentID, categories, category) => {
         _id: category._id,
         name: category.name,
         slug: category.slug,
-        parentID: category.parentID,
+        parentID: cat._id,
         children: [],
       };
       currentCategory.push({
@@ -38,7 +38,7 @@ const newCategory = (parentID, categories, category) => {
         ...cat,
         children:
           cat.children && cat.children.length > 0
-            ? newCategory(parentID, cat.children, category)
+            ? addNewCategory(parentID, cat.children, category)
             : [],
       });
     }
@@ -95,7 +95,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        categories: newCategory(category.parentID, state.categories, category),
+        categories: addNewCategory(
+          category.parentID,
+          state.categories,
+          category
+        ),
       };
 
     case actionTypes.ADD_CATEGORY_FAILURE:

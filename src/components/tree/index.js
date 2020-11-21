@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCategories } from '../../redux/actions/category.action';
+import {
+  setCategories,
+  updateCategories,
+  deleteCategory,
+} from '../../redux/actions/category.action';
 
 function getObjFromPath(cats, path) {
   let obj = null;
@@ -49,8 +53,6 @@ const TreeEditor = React.memo(function TreeEditor({
     .map((path) => parseInt(path));
   const obj = getObjFromPath(categories, arrayOfPath);
   const arr = getArrayFromPath(categories, arrayOfPath);
-  console.log(arr);
-
   const onChangeName = (e) => {
     setValue(e.target.value);
   };
@@ -61,13 +63,22 @@ const TreeEditor = React.memo(function TreeEditor({
 
   const onSave = () => {
     obj.name = value;
+    dispatch(updateCategories(obj)).then((result) => {
+      if (result) {
+        dispatch(setCategories(categories));
+      }
+    });
     dispatch(setCategories(categories));
     onToggleShowInput();
   };
 
   const onDelete = () => {
-    arr.splice(currentPath, 1);
-    dispatch(setCategories(categories));
+    const data = arr.splice(currentPath, 1);
+    dispatch(deleteCategory(data[0]._id)).then((result) => {
+      if (result) {
+        dispatch(setCategories(categories));
+      }
+    });
   };
 
   return (
@@ -101,6 +112,7 @@ function Tree({ cats = [], level = 0, path = '0' }) {
       setSelectedIds((state) => [...state, id]);
     }
   };
+
   return (
     <ul style={style}>
       {cats.map((cat, index) => (

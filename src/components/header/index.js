@@ -60,13 +60,6 @@ function Header() {
             <div>Xem giỏ hàng</div>
           </div>
         </div>
-        <div className={styles.carts}>
-          <div className={styles.cartIcon}>
-            <sub>2</sub>
-            <FontAwesomeIcon icon={faCartPlus} color="#5CC9F1" />
-          </div>
-          <div>Giỏ hàng</div>
-        </div>
       </div>
     </div>
   );

@@ -4,13 +4,27 @@
 
   .header {
     .title {
-      font-size: 30px;
+      font-size: 20px;
+      text-transform: uppercase;
       color: #00315c;
     }
     button {
       margin: 15px 0px;
     }
   }
-  .body {
+}
+.modal {
+  border: none;
+  .titleModal {
+    background-color: #03a9f4;
+    border-radius: 3px 3px 0px 0px;
+    border: none;
+    color: white;
+    padding: 8px;
+    font-size: 18px;
+  }
+  .file {
+    overflow: hidden;
+    width: 100px;
   }
 }

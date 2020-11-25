@@ -48,7 +48,11 @@ const addNewCategory = (parentID, categories, category) => {
 export default (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_CATEGORIES:
-      return { ...state, categories: action.payload };
+      return {
+        ...state,
+        categories: action.payload.filter((cat) => cat !== undefined),
+      };
+
     case actionTypes.GET_ALL_CATEGORY_RQ:
       return { ...state, loading: true };
     case actionTypes.GET_ALL_CATEGORY_SUCCESS:

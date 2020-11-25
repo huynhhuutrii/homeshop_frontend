@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 import moment from 'moment';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAllOrder, updateOrder } from '../../redux/actions/order.action';
+import {
+  getAllOrder,
+  updateOrder,
+  deleteOrder,
+} from '../../redux/actions/order.action';
 import { BsSearch } from 'react-icons/bs';
 import { Modal, Button } from 'react-bootstrap';
 export default function Orders() {
   const [currentOrder, setCurrentOrder] = useState(null);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getAllOrder());
@@ -34,10 +37,25 @@ export default function Orders() {
     dispatch(updateOrder(currentOrder._id));
     setShow(false);
   };
+  const handleDeleteOrder = () => {
+    if (currentOrder) {
+      dispatch(deleteOrder(currentOrder._id));
+    }
+    setShow(false);
+  };
   return (
     <div className={styles.container}>
-      <div className="m-5 bg-light w-100 p-3 border rounded">
-        <h6 className="text-uppercase">Quản lý đơn hàng</h6>
+      <div
+        style={{
+          color: '#00315C',
+          fontSize: '20px',
+          textTransform: 'uppercase',
+        }}
+        className="text-uppercase ml-5 mt-3 mb-0"
+      >
+        Quản lý đơn hàng
+      </div>
+      <div className="ml-5 mt-3 mb-5 bg-light w-100 p-3 border rounded">
         <div className="ml-3 mr-4">
           <div className="row mb-3 ">
             <h6 className="col-2">SĐT</h6>
@@ -47,35 +65,36 @@ export default function Orders() {
             <h6 className="col-3">Trạng thái</h6>
             <div className="col-2"></div>
           </div>
-          {orders.map((item, index) => {
-            return (
-              <div
-                key={index}
-                className="p-2 row border border-secondary mb-3 rounded d-flex flex-row align-items-center"
-              >
-                <div className="col-2 text-primary">{item.phone}</div>
-                <div className="col-2">
-                  {moment(item.createAt).format('DD/MM/YYYY')}
+          {orders.length > 0 &&
+            orders.map((item, index) => {
+              return (
+                <div
+                  key={index}
+                  className="p-2 row border border-secondary mb-3 rounded d-flex flex-row align-items-center"
+                >
+                  <div className="col-2 text-primary">{item.phone}</div>
+                  <div className="col-2">
+                    {moment(item.createAt).format('DD/MM/YYYY')}
+                  </div>
+                  <div className="col-1">{itemCount(item.cartItems)}</div>
+                  <div className="col-2">
+                    {item.totalPrice.toLocaleString('vi-VI')}
+                  </div>
+                  <div className="col-3">{item.status}</div>
+                  <div className="col-2">
+                    <BsSearch
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => showOrderDetail(item)}
+                    />
+                  </div>
                 </div>
-                <div className="col-1">{itemCount(item.cartItems)}</div>
-                <div className="col-2">
-                  {item.totalPrice.toLocaleString('vi-VI')}
-                </div>
-                <div className="col-3">{item.status}</div>
-                <div className="col-2">
-                  <BsSearch
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => showOrderDetail(item)}
-                  />
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </div>
       <Modal size="lg" show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <h5>Chi tiết đơn hàng</h5>
         </Modal.Header>
         <Modal.Body>
           {currentOrder ? (
@@ -132,7 +151,7 @@ export default function Orders() {
           ) : null}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="danger" onClick={handleClose}>
+          <Button variant="danger" onClick={handleDeleteOrder}>
             Xóa đơn hàng
           </Button>
           {currentOrder && currentOrder.status !== 'Đã thanh toán' ? (

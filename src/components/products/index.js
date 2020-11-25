@@ -6,9 +6,10 @@ import {
   addProduct,
   deleteProduct,
   updateProduct,
-  getAllProduct,
 } from '../../redux/actions/product.action';
-import { getInitialData } from '../../redux/actions/initialData.action';
+import { BsPencilSquare, BsFillTrashFill } from 'react-icons/bs';
+import { AiFillFileImage } from 'react-icons/ai';
+import { IoIosCloseCircleOutline } from 'react-icons/io';
 
 export default function Product() {
   const [name, setName] = useState('');
@@ -17,6 +18,7 @@ export default function Product() {
   const [description, setDescription] = useState('');
   const [quantity, setQuantity] = useState('');
   const [productImages, setProductImages] = useState([]);
+  console.log(productImages);
   const [showProductDetailModal, setShowProductDetailModal] = useState(false);
   const [productDetail, setProductDetail] = useState(null);
   const [show, setShow] = useState(false);
@@ -29,6 +31,7 @@ export default function Product() {
   const [descriptionEdit, setDescriptionEdit] = useState('');
 
   const [imagesEdit, setImagesEdit] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
 
   const product = useSelector((state) => state.productReducer);
   const mycategory = useSelector((state) => state.categoryReducer);
@@ -96,10 +99,22 @@ export default function Product() {
     setImagesEdit([...imagesEdit, e.target.files[0]]);
   };
 
-  const handelDelete = (id) => {
-    dispatch(deleteProduct(id));
+  const handelDelete = (item) => {
+    // dispatch(deleteProduct(id));
+    setProductDetail(item);
+    setShowAlert(true);
   };
-
+  const onDeleteProduct = () => {
+    if (productDetail) {
+      dispatch(deleteProduct(productDetail._id));
+    }
+    setShowAlert(false);
+  };
+  const deleteImageFromList = (index) => {
+    const newImages = [...productImages];
+    newImages.splice(index, 1);
+    setProductImages(newImages);
+  };
   const showProducts = () => {
     return (
       <Table responsive="sm">
@@ -117,22 +132,25 @@ export default function Product() {
           {product.products.length > 0
             ? product.products.map((item, index) => {
                 return (
-                  <tr key={index}>
+                  <tr key={index} style={{ cursor: 'pointer' }}>
                     <td>{index + 1}</td>
                     <td onClick={() => handelShowProductDetail(item)}>
                       {item.name}
                     </td>
-                    <td>{item.price}</td>
+                    <td>{item.price.toLocaleString('vi-VI')}</td>
 
                     <td>{item.quantity}</td>
                     <td>{item.category.name}</td>
                     <td>
-                      <button onClick={() => handleShowUpdateProduct(item)}>
-                        Sửa
-                      </button>
-                      <button onClick={() => handelDelete(item._id)}>
-                        Xóa
-                      </button>
+                      <BsPencilSquare
+                        onClick={() => handleShowUpdateProduct(item)}
+                        color="#303F9F"
+                        style={{ marginRight: '10px' }}
+                      />
+                      <BsFillTrashFill
+                        onClick={() => handelDelete(item)}
+                        color="#D32F2F"
+                      />
                     </td>
                   </tr>
                 );
@@ -145,33 +163,33 @@ export default function Product() {
   const addProductModal = () => {
     return (
       <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Thêm mới danh mục sản phẩm</Modal.Title>
-        </Modal.Header>
+        <div className={styles.titleModal}>
+          <div>Thêm mới sản phẩm</div>
+        </div>
         <Modal.Body>
           <input
-            className="form-control"
+            className="form-control mb-3"
             type="text"
             placeholder="Tên sản phẩm"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <input
-            className="form-control"
+            className="form-control mb-3"
             type="text"
             placeholder="Giá sản phẩm"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
           <input
-            className="form-control"
+            className="form-control mb-3"
             type="text"
             placeholder="Mô tả sản phẩm"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
           <input
-            className="form-control"
+            className="form-control mb-3"
             type="text"
             placeholder="Số lượng sản phẩm"
             value={quantity}
@@ -179,7 +197,7 @@ export default function Product() {
           />
 
           <select
-            className="form-control"
+            className="form-control mb-3"
             value={categoryID}
             onChange={(e) => setCategoryID(e.target.value)}
           >
@@ -190,12 +208,32 @@ export default function Product() {
               </option>
             ))}
           </select>
-          {product.length > 0
-            ? productImages.map((item, index) => {
-                return <div key={index}>{item.name}</div>;
-              })
-            : null}
-          <input type="file" name="productImages" onChange={handelPicture} />
+
+          <input
+            type="file"
+            id="file"
+            name="productImages"
+            className={styles.fileInput}
+            onChange={handelPicture}
+          />
+          <label className={styles.fileLabel} htmlFor="file">
+            <AiFillFileImage />
+            <div>Chọn ảnh</div>
+          </label>
+          <div className={styles.imgList}>
+            {productImages.length > 0
+              ? productImages.map((pic, index) => {
+                  return (
+                    <div key={index} className={styles.boxImg}>
+                      <img src={URL.createObjectURL(pic)} alt="" />
+                      <IoIosCloseCircleOutline
+                        onClick={() => deleteImageFromList(index)}
+                      />
+                    </div>
+                  );
+                })
+              : null}
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
@@ -316,7 +354,7 @@ export default function Product() {
         onHide={handelCloseProductDetailModal}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Chi tiết sản phẩm</Modal.Title>
+          <h5>Chi tiết sản phẩm</h5>
         </Modal.Header>
         <Modal.Body>
           <Row>
@@ -376,25 +414,43 @@ export default function Product() {
           <Button variant="secondary" onClick={handelCloseProductDetailModal}>
             Close
           </Button>
-          <Button variant="primary" onClick={handelCloseProductDetailModal}>
-            Save Changes
+        </Modal.Footer>
+      </Modal>
+    );
+  };
+  const handleCloseAlert = () => setShowAlert(false);
+  const alertModal = () => {
+    return (
+      <Modal show={showAlert} onHide={handleCloseAlert}>
+        <Modal.Header closeButton>
+          <Modal.Title>Thông báo</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Bạn có thật sự muốn xóa sản phẩm này</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseAlert}>
+            Đóng
+          </Button>
+          <Button variant="primary" onClick={onDeleteProduct}>
+            Xác nhận
           </Button>
         </Modal.Footer>
       </Modal>
     );
   };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.title}>Thêm sản phẩm</div>
+        <div className={styles.title}>Quản lý sản phẩm</div>
         <Button className={styles.button} onClick={handleShow}>
-          Thêm
+          Thêm sản phẩm
         </Button>
       </div>
       {showProducts()}
       {addProductModal()}
       {productDetailModal()}
       {updateProductModal()}
+      {alertModal()}
     </div>
   );
 }

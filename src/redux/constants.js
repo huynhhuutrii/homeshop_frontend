@@ -5,7 +5,7 @@ export const GET_ALL_PRODUCT = 'GET_ALL_PRODUCT';
 export const ADD_NEW_PRODUCT = 'ADD_NEW_PRODUCT';
 export const DELETE_PRODUCT = 'DELETE_PRODUCT';
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT';
-
+export const DELETE_ORDER = 'DELETE_ORDER';
 export const GET_ALL_ORDER = 'GET_ALL_ORDER';
 export const UPDATE_ORDER = 'UPDATE_ORDER';
 

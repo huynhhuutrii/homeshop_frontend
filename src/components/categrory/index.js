@@ -27,6 +27,7 @@ export default function Category() {
 
   const createCategoryList = (categories, options = []) => {
     for (let category of categories) {
+      if (!category) continue;
       options.push({
         value: category._id,
         name: category.name,
@@ -45,20 +46,20 @@ export default function Category() {
 
   const renderAddCategoryModel = () => {
     return (
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Thêm mới danh mục sản phẩm</Modal.Title>
-        </Modal.Header>
+      <Modal show={show} onHide={handleClose} className={styles.modal}>
+        <div className={styles.titleModal}>
+          <div>Thêm mới danh mục sản phẩm</div>
+        </div>
         <Modal.Body>
           <input
-            className={styles.inputCategory}
+            className="form-control mb-3"
             type="text"
             placeholder="Tên danh mục"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
           />
           <select
-            className="form-control"
+            className="form-control mb-3"
             value={parentID}
             onChange={(e) => setParentID(e.target.value)}
           >
@@ -70,6 +71,7 @@ export default function Category() {
             ))}
           </select>
           <input
+            className={styles.file}
             type="file"
             name="categoryImage"
             onChange={handelCategoryImage}
@@ -77,10 +79,10 @@ export default function Category() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Đóng
           </Button>
           <Button variant="primary" onClick={handleClose}>
-            Save Changes
+            Thêm
           </Button>
         </Modal.Footer>
       </Modal>

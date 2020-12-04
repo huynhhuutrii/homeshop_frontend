@@ -13,6 +13,15 @@ export const getAllProduct = () => {
     }
   };
 };
+export const searchProduct = (key) => {
+  return async (dispatch) => {
+    const res = await axios.post('product/search', { key });
+    dispatch({
+      type: actionTypes.SEARCH_PRODUCT,
+      payload: res.data.searchResult,
+    });
+  };
+};
 export const addProduct = (form) => {
   return async (dispatch) => {
     const res = await axios.post('/product/createproduct', form);
@@ -35,7 +44,30 @@ export const updateProduct = (form) => {
     }
   };
 };
-
+export const deleteReview = (idReview, idProduct) => {
+  return async (dispatch) => {
+    const res = await axios.put('product/review/delete', {
+      idReview,
+      idProduct,
+    });
+    if (res.status === 200) {
+      dispatch({ type: actionTypes.DELETE_REVIEW, payload: idReview });
+    }
+  };
+};
+export const getAllReview = () => {
+  return async (dispatch) => {
+    try {
+      const res = await axios.get('/product/reviews');
+      dispatch({
+        type: actionTypes.GET_ALL_REVIEW,
+        payload: res.data.allReview,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+};
 export const deleteProduct = (id) => {
   return async (dispatch) => {
     try {

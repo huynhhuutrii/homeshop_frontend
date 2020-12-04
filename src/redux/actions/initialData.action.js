@@ -16,3 +16,13 @@ export const getInitialData = () => {
     }
   };
 };
+export const getHomeData = () => {
+  return async (dispatch) => {
+    try {
+      const res = await axios.get('/home/data');
+      dispatch({ type: actionTypes.GET_HOME_DATA, payload: res.data.homeData });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+};

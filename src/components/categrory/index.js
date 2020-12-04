@@ -3,8 +3,17 @@ import styles from './styles.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCategory } from '../../redux/actions/category.action';
 import { Button, Modal } from 'react-bootstrap';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers';
+import * as yup from 'yup';
 import Tree from '../tree';
+const schema = yup.object().shape({
+  categoryName: yup.string().required(),
+});
 export default function Category() {
+  const { register, handleSubmit, errors } = useForm({
+    resolver: yupResolver(schema),
+  });
   const dispatch = useDispatch();
   const category = useSelector((state) => state.categoryReducer);
   const [show, setShow] = useState(false);
@@ -12,7 +21,7 @@ export default function Category() {
   const [categoryImage, setCategoryImage] = useState('');
   const [parentID, setParentID] = useState('');
 
-  const handleClose = () => {
+  const handleAddCategory = () => {
     const form = new FormData();
     form.append('name', categoryName);
     form.append('parentID', parentID);
@@ -21,6 +30,9 @@ export default function Category() {
     setCategoryName('');
     setParentID('');
     setCategoryImage('');
+    setShow(false);
+  };
+  const handleClose = () => {
     setShow(false);
   };
   const handleShow = () => setShow(true);
@@ -47,44 +59,62 @@ export default function Category() {
   const renderAddCategoryModel = () => {
     return (
       <Modal show={show} onHide={handleClose} className={styles.modal}>
-        <div className={styles.titleModal}>
-          <div>Thêm mới danh mục sản phẩm</div>
-        </div>
-        <Modal.Body>
-          <input
-            className="form-control mb-3"
-            type="text"
-            placeholder="Tên danh mục"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-          />
-          <select
-            className="form-control mb-3"
-            value={parentID}
-            onChange={(e) => setParentID(e.target.value)}
-          >
-            <option>Chọn danh mục</option>
-            {createCategoryList(category.categories).map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-          <input
-            className={styles.file}
-            type="file"
-            name="categoryImage"
-            onChange={handelCategoryImage}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Thêm
-          </Button>
-        </Modal.Footer>
+        <form onSubmit={handleSubmit(handleAddCategory)}>
+          <div className={styles.titleModal}>
+            <div>Thêm mới danh mục sản phẩm</div>
+          </div>
+          <Modal.Body>
+            {errors.categoryName && (
+              <div
+                style={{
+                  fontSize: '14px',
+                  marginBottom: '10px',
+                  color: 'red',
+                }}
+              >
+                Chưa nhập tên danh mục
+              </div>
+            )}
+            <input
+              ref={register}
+              name="categoryName"
+              className="form-control mb-3"
+              type="text"
+              placeholder="Tên danh mục"
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
+            />
+
+            <select
+              ref={register}
+              name="parentID"
+              className="form-control mb-3"
+              value={parentID}
+              onChange={(e) => setParentID(e.target.value)}
+            >
+              <option>Chọn danh mục</option>
+              {createCategoryList(category.categories).map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+            <input
+              className={styles.file}
+              type="file"
+              name="categoryImage"
+              onChange={handelCategoryImage}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Đóng
+            </Button>
+            <Button variant="primary" type="submit">
+              Thêm
+            </Button>
+          </Modal.Footer>
+        </form>
       </Modal>
     );
   };

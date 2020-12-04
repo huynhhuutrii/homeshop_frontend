@@ -137,6 +137,8 @@ const TreeEditor = React.memo(function TreeEditor({
     obj.children.push(dragObj);
 
     dispatch(setCategories(categories));
+
+    console.log('paren id', id, 'child', dragObj._id);
   };
 
   return (

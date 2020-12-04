@@ -2,23 +2,40 @@ import React, { useState } from 'react';
 import { Modal, Button, Table, Row, Col } from 'react-bootstrap';
 import styles from './styles.module.scss';
 import { useSelector, useDispatch } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers';
+import * as yup from 'yup';
 import {
   addProduct,
   deleteProduct,
   updateProduct,
+  searchProduct,
 } from '../../redux/actions/product.action';
+
 import { BsPencilSquare, BsFillTrashFill } from 'react-icons/bs';
 import { AiFillFileImage } from 'react-icons/ai';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
+import PaginationCommon from '../../pagination';
+const schema = yup.object().shape({
+  name: yup.string().required(),
+  categoryID: yup.string().required(),
+  price: yup.string().required(),
+  description: yup.string().required(),
+  quantity: yup.string().required(),
+  productImages: yup.mixed().required(),
+});
 
 export default function Product() {
+  const { register, handleSubmit, errors } = useForm({
+    resolver: yupResolver(schema),
+  });
   const [name, setName] = useState('');
   const [categoryID, setCategoryID] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [quantity, setQuantity] = useState('');
   const [productImages, setProductImages] = useState([]);
-  console.log(productImages);
+
   const [showProductDetailModal, setShowProductDetailModal] = useState(false);
   const [productDetail, setProductDetail] = useState(null);
   const [show, setShow] = useState(false);
@@ -33,11 +50,17 @@ export default function Product() {
   const [imagesEdit, setImagesEdit] = useState([]);
   const [showAlert, setShowAlert] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(10);
+  const [keySearch, setkeySearch] = useState('');
+  const indexOfLastProducts = currentPage * productsPerPage;
+  const indexOfFirstProducts = indexOfLastProducts - productsPerPage;
+
   const product = useSelector((state) => state.productReducer);
   const mycategory = useSelector((state) => state.categoryReducer);
   const dispatch = useDispatch();
 
-  const handleClose = () => {
+  const handleAddProduct = (data) => {
     const form = new FormData();
 
     form.append('name', name);
@@ -57,6 +80,7 @@ export default function Product() {
     setProductImages([]);
     setShow(false);
   };
+  const handleClose = () => setShow(false);
 
   const handleShow = () => setShow(true);
   const handleCloseUpdateProduct = () => setShowUpdateModal(false);
@@ -115,22 +139,33 @@ export default function Product() {
     newImages.splice(index, 1);
     setProductImages(newImages);
   };
+  const currentProducts = product.products.slice(
+    indexOfFirstProducts,
+    indexOfLastProducts
+  );
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  const handelSearch = () => {
+    dispatch(searchProduct(keySearch));
+  };
   const showProducts = () => {
     return (
-      <Table responsive="sm">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Tên sản phầm</th>
-            <th>Giá</th>
-            <th>Số lượng</th>
-            <th>Danh mục</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {product.products.length > 0
-            ? product.products.map((item, index) => {
+      <div>
+        {currentProducts.length > 0 ? (
+          <Table responsive="sm">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên sản phầm</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Danh mục</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentProducts.map((item, index) => {
                 return (
                   <tr key={index} style={{ cursor: 'pointer' }}>
                     <td>{index + 1}</td>
@@ -154,95 +189,177 @@ export default function Product() {
                     </td>
                   </tr>
                 );
-              })
-            : null}
-        </tbody>
-      </Table>
+              })}
+            </tbody>
+          </Table>
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              fontSize: '20px',
+              marginTop: '50px',
+            }}
+          >
+            Không tìm thấy kết quả phù hợp
+          </div>
+        )}
+      </div>
     );
   };
   const addProductModal = () => {
     return (
       <Modal show={show} onHide={handleClose}>
-        <div className={styles.titleModal}>
-          <div>Thêm mới sản phẩm</div>
-        </div>
-        <Modal.Body>
-          <input
-            className="form-control mb-3"
-            type="text"
-            placeholder="Tên sản phẩm"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            className="form-control mb-3"
-            type="text"
-            placeholder="Giá sản phẩm"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-          <input
-            className="form-control mb-3"
-            type="text"
-            placeholder="Mô tả sản phẩm"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <input
-            className="form-control mb-3"
-            type="text"
-            placeholder="Số lượng sản phẩm"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-          />
-
-          <select
-            className="form-control mb-3"
-            value={categoryID}
-            onChange={(e) => setCategoryID(e.target.value)}
-          >
-            <option>Chọn danh mục</option>
-            {createCategoryList(mycategory.categories).map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="file"
-            id="file"
-            name="productImages"
-            className={styles.fileInput}
-            onChange={handelPicture}
-          />
-          <label className={styles.fileLabel} htmlFor="file">
-            <AiFillFileImage />
-            <div>Chọn ảnh</div>
-          </label>
-          <div className={styles.imgList}>
-            {productImages.length > 0
-              ? productImages.map((pic, index) => {
-                  return (
-                    <div key={index} className={styles.boxImg}>
-                      <img src={URL.createObjectURL(pic)} alt="" />
-                      <IoIosCloseCircleOutline
-                        onClick={() => deleteImageFromList(index)}
-                      />
-                    </div>
-                  );
-                })
-              : null}
+        <form onSubmit={handleSubmit(handleAddProduct)}>
+          <div className={styles.titleModal}>
+            <div>Thêm mới sản phẩm</div>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
+          <Modal.Body>
+            {errors.name && (
+              <div
+                style={{
+                  fontSize: '14px',
+                  marginBottom: '10px',
+                  color: 'red',
+                }}
+              >
+                Nhập tên sản phẩm
+              </div>
+            )}
+            <input
+              ref={register}
+              name="name"
+              className="form-control mb-3"
+              type="text"
+              placeholder="Tên sản phẩm"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            {errors.price ? (
+              <div
+                style={{
+                  fontSize: '14px',
+                  marginBottom: '10px',
+                  color: 'red',
+                }}
+              >
+                Nhập giá
+              </div>
+            ) : null}
+            <input
+              ref={register}
+              name="price"
+              className="form-control mb-3"
+              type="text"
+              placeholder="Giá sản phẩm"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
+            {errors.description ? (
+              <div
+                style={{
+                  fontSize: '14px',
+                  marginBottom: '10px',
+                  color: 'red',
+                }}
+              >
+                Nhập mô tả sản phẩm
+              </div>
+            ) : null}
+            <input
+              ref={register}
+              name="description"
+              className="form-control mb-3"
+              type="text"
+              placeholder="Mô tả sản phẩm"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            {errors.quantity ? (
+              <div
+                style={{
+                  fontSize: '14px',
+                  marginBottom: '10px',
+                  color: 'red',
+                }}
+              >
+                Nhập số lượng sản phẩm
+              </div>
+            ) : null}
+            <input
+              ref={register}
+              name="quantity"
+              className="form-control mb-3"
+              type="text"
+              placeholder="Số lượng sản phẩm"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+            />
+            {errors.categoryID ? (
+              <div
+                style={{
+                  fontSize: '14px',
+                  marginBottom: '10px',
+                  color: 'red',
+                }}
+              >
+                Chưa chọn danh mục
+              </div>
+            ) : null}
+            <select
+              ref={register}
+              name="categoryID"
+              className="form-control mb-3"
+              value={categoryID}
+              onChange={(e) => setCategoryID(e.target.value)}
+            >
+              <option>Chọn danh mục</option>
+              {createCategoryList(mycategory.categories).map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+
+            <input
+              ref={register}
+              type="file"
+              id="file"
+              name="productImages"
+              className={styles.fileInput}
+              onChange={handelPicture}
+            />
+            {errors.productImages ? (
+              <div>Chưa chọn ảnh cho sản phẩm</div>
+            ) : null}
+            <label className={styles.fileLabel} htmlFor="file">
+              <AiFillFileImage />
+              <div>Chọn ảnh</div>
+            </label>
+            <div className={styles.imgList}>
+              {productImages.length > 0
+                ? productImages.map((pic, index) => {
+                    return (
+                      <div key={index} className={styles.boxImg}>
+                        <img src={URL.createObjectURL(pic)} alt="" />
+                        <IoIosCloseCircleOutline
+                          onClick={() => deleteImageFromList(index)}
+                        />
+                      </div>
+                    );
+                  })
+                : null}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Đóng
+            </Button>
+            <Button type="submit" variant="primary">
+              Thêm
+            </Button>
+          </Modal.Footer>
+        </form>
       </Modal>
     );
   };
@@ -440,17 +557,51 @@ export default function Product() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.title}>Quản lý sản phẩm</div>
-        <Button className={styles.button} onClick={handleShow}>
-          Thêm sản phẩm
-        </Button>
+      <div>
+        <div className={styles.header}>
+          <div className={styles.title}>Quản lý sản phẩm</div>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '10px',
+              marginBottom: '10px',
+              minWidth: '800px',
+            }}
+          >
+            <div className={styles.search}>
+              <input
+                placeholder="Nhập tên sản phẩm"
+                value={keySearch}
+                onChange={(e) => {
+                  setkeySearch(e.target.value);
+                }}
+              />
+              <div onClick={handelSearch}>Tìm kiếm</div>
+            </div>
+            <Button className={styles.button} onClick={handleShow}>
+              Thêm sản phẩm
+            </Button>
+          </div>
+        </div>
+
+        {showProducts()}
+        {addProductModal()}
+        {productDetailModal()}
+        {updateProductModal()}
+        {alertModal()}
       </div>
-      {showProducts()}
-      {addProductModal()}
-      {productDetailModal()}
-      {updateProductModal()}
-      {alertModal()}
+
+      {currentProducts.length > 0 ? (
+        <PaginationCommon
+          activePage={currentPage}
+          productsPerPage={productsPerPage}
+          totalProducts={product.products.length}
+          handelPageChange={paginate}
+          className={styles}
+        />
+      ) : null}
     </div>
   );
 }

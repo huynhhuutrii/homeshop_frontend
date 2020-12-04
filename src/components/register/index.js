@@ -1,10 +1,11 @@
 import React from 'react';
 import styles from './styles.module.scss';
 import logo from '../../assets/img/logo.jpg';
+import { Redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
 import * as yup from 'yup';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../../redux/actions/user.action';
 function equalTo(ref, msg) {
   return this.test({
@@ -35,13 +36,14 @@ function Register(props) {
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
-
+  const auth = useSelector((state) => state.authReducer);
   const handleRegister = (data) => {
     const { name, username, email, password } = data;
     dispatch(registerUser({ name, username, email, password }));
-    props.history.push('/');
   };
-
+  if (auth.authenticate === true) {
+    return <Redirect to="/home" />;
+  }
   return (
     <div className={styles.container}>
       <div className={styles.title}>

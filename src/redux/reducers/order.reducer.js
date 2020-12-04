@@ -23,6 +23,11 @@ export default (state = initialState, action) => {
         ...state,
         orders: update(state.orders, action.payload),
       };
+    case actionTypes.SEARCH_ORDER:
+      return {
+        ...state,
+        orders: action.payload,
+      };
     case actionTypes.DELETE_ORDER:
       return {
         ...state,

@@ -1,6 +1,7 @@
 import * as actionTypes from '../constants';
 const initialState = {
   products: [],
+  reviews: [],
 };
 const updateProduct = (productList, product) => {
   for (let i = 0; i < productList.length; i++) {
@@ -17,7 +18,11 @@ export default (state = initialState, action) => {
         ...state,
         products: action.payloads.products,
       };
-
+    case actionTypes.SEARCH_PRODUCT:
+      return {
+        ...state,
+        products: action.payload,
+      };
     case actionTypes.ADD_NEW_PRODUCT:
       return {
         ...state,
@@ -34,6 +39,18 @@ export default (state = initialState, action) => {
         ...state,
         products: state.products.filter(
           (product) => product._id !== action.payload
+        ),
+      };
+    case actionTypes.GET_ALL_REVIEW:
+      return {
+        ...state,
+        reviews: action.payload,
+      };
+    case actionTypes.DELETE_REVIEW:
+      return {
+        ...state,
+        reviews: state.reviews.filter(
+          (review) => review.userReview._id !== action.payload
         ),
       };
     default:

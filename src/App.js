@@ -6,6 +6,8 @@ import ProductPage from './pages/productpage';
 import CategoryPage from './pages/categorypage';
 import OrderPage from './pages/orderpage';
 import HomePage from './pages/homepage';
+import UserPage from './pages/userpage';
+import ReivewPage from './pages/reviewpage';
 import { Switch, Route } from 'react-router-dom';
 import PrivateRoute from './components/HOC/PrivateRoute';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,11 +27,12 @@ function App() {
     <Switch>
       <PrivateRoute path="/" exact component={AdminPage} />
       <PrivateRoute path="/home" component={HomePage} />
-
+      <PrivateRoute path="/users" component={UserPage} />
       <PrivateRoute path="/products" component={ProductPage} />
 
       <PrivateRoute path="/orders" component={OrderPage} />
       <PrivateRoute path="/category" component={CategoryPage} />
+      <PrivateRoute path="/review" component={ReivewPage} />
       <Route
         path="/register"
         render={(routeProps) => <RegisterPage {...routeProps} />}

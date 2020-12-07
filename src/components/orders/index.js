@@ -16,7 +16,7 @@ export default function Orders() {
   const [show, setShow] = useState(false);
   const [keysearch, setKeysearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(10);
+  const [productsPerPage] = useState(8);
   const indexOfLastProducts = currentPage * productsPerPage;
   const indexOfFirstProducts = indexOfLastProducts - productsPerPage;
   const handleClose = () => setShow(false);

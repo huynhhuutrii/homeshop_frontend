@@ -16,25 +16,29 @@ export const deleteUser = (id) => {
 export const login = (user) => {
   return async (dispatch) => {
     dispatch({ type: actionTypes.LOGIN_REQUEST });
-    const res = await axios.post('/admin/login', { ...user });
-    console.log(res.errors);
-    if (res.status === 200) {
-      const { token, user } = res.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      dispatch({
-        type: actionTypes.LOGIN_SUCCESS,
-        payload: { token, user },
-      });
-    } else {
-      if (res.status === 400) {
+    try {
+      const res = await axios.post('/admin/login', { ...user });
+      console.log(res.errors);
+      if (res.status === 200) {
+        const { token, user } = res.data;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
         dispatch({
-          type: actionTypes.LOGIN_FAILUER,
-          payload: {
-            err: res.data.errors,
-          },
+          type: actionTypes.LOGIN_SUCCESS,
+          payload: { token, user },
         });
+      } else {
+        if (res.status === 400) {
+          dispatch({
+            type: actionTypes.LOGIN_FAILUER,
+            payload: {
+              err: res.data.errors,
+            },
+          });
+        }
       }
+    } catch (err) {
+      console.log('err', err.response.data);
     }
   };
 };

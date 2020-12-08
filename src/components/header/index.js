@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from './styles.module.scss';
-import logo from '../../assets/img/logo.jpg';
+import logo from '../../assets/img/homelogo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NavLink } from 'react-router-dom';
-import { faSearch, faUserAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUserAlt } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../redux/actions/user.action';
 
@@ -29,7 +29,7 @@ function Header() {
           <FontAwesomeIcon icon={faUserAlt} size="1x" color="#5CC9F1" />
           {auth.authenticate ? (
             <div className={styles.isLogged}>
-              Xin chào, <span>{auth.user.name}</span>
+              <span>{auth.user.name}</span>
               <div className={styles.dropdownUser}>
                 <div onClick={logoutUser}>Đăng xuất</div>
               </div>
@@ -45,10 +45,6 @@ function Header() {
               </NavLink>
             </div>
           )}
-          <div className={styles.dropdownUser}>
-            <div onClick={logoutUser}>Đăng xuất</div>
-            <div>Xem giỏ hàng</div>
-          </div>
         </div>
       </div>
     </div>

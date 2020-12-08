@@ -18,7 +18,6 @@ export const login = (user) => {
     dispatch({ type: actionTypes.LOGIN_REQUEST });
     try {
       const res = await axios.post('/admin/login', { ...user });
-      console.log(res.errors);
       if (res.status === 200) {
         const { token, user } = res.data;
         localStorage.setItem('token', token);
@@ -27,20 +26,17 @@ export const login = (user) => {
           type: actionTypes.LOGIN_SUCCESS,
           payload: { token, user },
         });
-      } else {
-        if (res.status === 400) {
-          dispatch({
-            type: actionTypes.LOGIN_FAILUER,
-            payload: {
-              err: res.data.errors,
-            },
-          });
-        }
       }
     } catch (err) {
-      console.log('err', err.response.data);
+      dispatch({
+        type: actionTypes.LOGIN_FAILUER,
+        payload: err.response.data,
+      });
     }
   };
+};
+export const clearError = () => {
+  return { type: 'CLEAR_ERROR' };
 };
 export const userLoggedIn = () => {
   return async (dispatch) => {
@@ -52,13 +48,6 @@ export const userLoggedIn = () => {
         payload: {
           token,
           user,
-        },
-      });
-    } else {
-      dispatch({
-        type: actionTypes.LOGIN_FAILUER,
-        payload: {
-          err: 'đăng nhập thất bại',
         },
       });
     }
@@ -84,26 +73,25 @@ export const logout = () => {
 export const registerUser = (user) => {
   return async (dispatch) => {
     dispatch({ type: actionTypes.REGISTER_REQUEST });
-    const res = await axios.post('/admin/register', { ...user });
-    if (res.status === 201) {
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(user));
-      const { message } = res.data;
-      dispatch({
-        type: actionTypes.REGISTER_SUCCESS,
-        payload: {
-          message: message,
-        },
-      });
-    } else {
-      if (res.status === 400) {
+    try {
+      const res = await axios.post('/admin/register', { ...user });
+      if (res.status === 201) {
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('user', JSON.stringify(user));
+        const { message } = res.data;
         dispatch({
-          type: actionTypes.REGISTER_FAILURE,
+          type: actionTypes.REGISTER_SUCCESS,
           payload: {
-            err: res.data.error,
+            message: message,
           },
         });
       }
+    } catch (err) {
+      console.log(err.response.data);
+      dispatch({
+        type: actionTypes.REGISTER_FAILURE,
+        payload: err.response.data,
+      });
     }
   };
 };

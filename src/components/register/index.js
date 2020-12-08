@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './styles.module.scss';
 import logo from '../../assets/img/logo.jpg';
 import { Redirect } from 'react-router-dom';
@@ -6,7 +6,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
 import * as yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from '../../redux/actions/user.action';
+import { registerUser, clearError } from '../../redux/actions/user.action';
+import ModalError from '../../common/error';
 function equalTo(ref, msg) {
   return this.test({
     name: 'equalTo',
@@ -32,6 +33,11 @@ const schema = yup.object().shape({
 });
 
 function Register(props) {
+  const [show, setShow] = useState(false);
+  const handleClose = () => {
+    setShow(false);
+    dispatch(clearError());
+  };
   const dispatch = useDispatch();
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
@@ -40,6 +46,9 @@ function Register(props) {
   const handleRegister = (data) => {
     const { name, username, email, password } = data;
     dispatch(registerUser({ name, username, email, password }));
+    if (auth.error.errors !== '') {
+      setShow(true);
+    }
   };
   if (auth.authenticate === true) {
     return <Redirect to="/home" />;
@@ -115,6 +124,13 @@ function Register(props) {
         Khi bạn nhấn Đăng ký, bạn đã đồng ý thực hiện mọi giao dịch mua bán theo{' '}
         <span>điều kiện sử dụng và chính sách của HTSHOP.vn</span>
       </div>
+      {auth.error ? (
+        <ModalError
+          handleClose={handleClose}
+          show={show}
+          error={auth.error.errors}
+        />
+      ) : null}
     </div>
   );
 }

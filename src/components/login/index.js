@@ -2,23 +2,33 @@ import React, { useState } from 'react';
 import styles from './styles.module.scss';
 import logoLogin from '../../assets/img/logosigin.png';
 import { ReactComponent as FaIcon } from '../../assets/img/facebook.svg';
-import { login } from '../../redux/actions/user.action';
+import { login, clearError } from '../../redux/actions/user.action';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+
+import ModalError from '../../common/error';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [show, setShow] = useState(false);
+
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.authReducer);
   const userLogin = (e) => {
     e.preventDefault();
     const user = { email, password };
     dispatch(login(user));
+    if (auth.error.errors !== '') {
+      setShow(true);
+    }
   };
   if (auth.authenticate === true) {
     return <Redirect to="/home" />;
   }
-
+  const handleClose = () => {
+    setShow(false);
+    dispatch(clearError());
+  };
   return (
     <div className={styles.containerLogin}>
       <div className={styles.title}>
@@ -56,6 +66,13 @@ export default function Login() {
           </button>
         </div>
       </form>
+      {auth.error ? (
+        <ModalError
+          handleClose={handleClose}
+          error={auth.error.errors}
+          show={show}
+        />
+      ) : null}
     </div>
   );
 }

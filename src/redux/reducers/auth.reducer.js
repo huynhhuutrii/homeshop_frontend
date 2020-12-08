@@ -10,7 +10,7 @@ const initialState = {
   authenticating: false,
   loading: false,
   message: '',
-  error: null,
+  error: '',
 };
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -24,6 +24,11 @@ export default (state = initialState, action) => {
         user: user,
         authenticate: true,
         authenticating: false,
+      };
+    case actionTypes.LOGIN_FAILUER:
+      return {
+        ...state,
+        error: action.payload,
       };
     case actionTypes.LOGOUT_REQUEST:
       return {
@@ -57,7 +62,7 @@ export default (state = initialState, action) => {
     case actionTypes.REGISTER_FAILURE:
       return {
         ...state,
-        error: action.payload.error,
+        error: action.payload,
         loading: false,
       };
     default:

@@ -2,15 +2,13 @@ import axios from '../../helpers';
 import * as actionTypes from '../constants';
 export const updateOrder = (idOrder) => {
   return async (dispatch) => {
-    try {
-      const res = await axios.put('/order/update', { idOrder });
+    const res = await axios.put('/order/update', { idOrder });
+
+    if (res.status === 200) {
       dispatch({
         type: actionTypes.UPDATE_ORDER,
-        payload: res.data.updateOrder,
+        payload: idOrder,
       });
-      dispatch(getAllOrder());
-    } catch (err) {
-      console.log(err);
     }
   };
 };

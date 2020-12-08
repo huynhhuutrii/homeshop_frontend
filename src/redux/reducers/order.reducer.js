@@ -3,10 +3,10 @@ import * as actionTypes from '../constants';
 const initialState = {
   orders: [],
 };
-const update = (orders, updateOrder) => {
-  for (let i = 0; i < orders.length; i++) {
-    if (orders[i]._id === updateOrder._id) {
-      orders[i] = updateOrder;
+const update = (orders, id) => {
+  for (let order of orders) {
+    if (order._id.toString() === id.toString()) {
+      order.status = 'Đã thanh toán';
     }
   }
   return orders;
@@ -19,9 +19,14 @@ export default (state = initialState, action) => {
         orders: action.payload,
       };
     case actionTypes.UPDATE_ORDER:
+      const orderIndex = state.orders.findIndex(
+        (c) => c._id === action.payload
+      );
+      const newOrder = [...state.orders];
+      newOrder[orderIndex].status = 'Đã thanh toán';
       return {
         ...state,
-        orders: update(state.orders, action.payload),
+        orders: newOrder,
       };
     case actionTypes.SEARCH_ORDER:
       return {

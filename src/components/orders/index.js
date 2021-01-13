@@ -197,7 +197,7 @@ export default function Orders() {
             <Button variant="danger" onClick={handleDeleteOrder}>
               Xóa đơn hàng
             </Button>
-            {currentOrder && currentOrder.status !== 'Đã thanh toán' ? (
+            {currentOrder && currentOrder.status === 'Chưa thanh toán' ? (
               <Button variant="primary" onClick={handelUpdateOrder}>
                 Duyệt đơn hàng
               </Button>
